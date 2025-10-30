@@ -22,7 +22,8 @@ financial-data-visualiser/
 │   ├── extract_gdp_data.py         # Extract data from raw OECD files
 │   ├── analyze_gdp_completeness.py # Analyze data completeness
 │   ├── init_database.py            # Initialize database schema
-│   └── ingest_data.py              # Ingest CSV data into database
+│   ├── ingest_data.py              # Ingest CSV data into database
+│   └── calculate_cumulative_return.py # Calculate derived metrics
 ├── web/
 │   ├── index.html                  # Main UI
 │   ├── app.js                      # Frontend application
@@ -142,6 +143,18 @@ Shows:
 - Countries with missing quarters
 - Coverage percentages
 - Missing quarter details
+
+### Calculate Derived Metrics
+```bash
+python scripts/calculate_cumulative_return.py <source_metric> [target_metric]
+```
+
+Example:
+```bash
+python scripts/calculate_cumulative_return.py gdp_per_capita gdp_cumulative_return
+```
+
+This calculates cumulative return indexed to 100 from any time series metric. The first value for each country is set to 100, and subsequent values reflect the cumulative percentage change from that baseline.
 
 ## Technology Stack
 

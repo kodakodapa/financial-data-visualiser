@@ -9,7 +9,8 @@
 
 2. **Database is already initialized and populated!**
    - Database: `data/economic_data.db`
-   - Contains: 3,565 GDP per capita records
+   - Contains: 7,130 records (2 metrics)
+   - Metrics: `gdp_per_capita` and `gdp_cumulative_return`
    - Countries: 30
    - Time range: 1995-Q1 to 2025-Q3
 
@@ -26,7 +27,7 @@ Open your browser to: **http://localhost:5000**
 
 ### View GDP Time Series
 
-1. Select metric: **gdp_per_capita**
+1. Select metric: **gdp_per_capita** or **gdp_cumulative_return**
 2. Click "Select All" to choose all countries (or select specific ones)
 3. Click **Load Data**
 4. Explore the interactive chart:
@@ -34,6 +35,8 @@ Open your browser to: **http://localhost:5000**
    - Zoom by dragging
    - Pan by holding shift and dragging
    - Double-click to reset zoom
+
+**Try the cumulative return metric** to see GDP growth indexed to 100 at the starting point for each country. This makes it easier to compare relative growth rates across countries.
 
 ### Compare Countries
 
@@ -99,11 +102,22 @@ Edit [app.py](app.py) and change the port in the last line:
 app.run(debug=True, port=5001)  # Changed from 5000 to 5001
 ```
 
+## Creating Derived Metrics
+
+You can calculate derived metrics from existing data:
+
+```bash
+python scripts/calculate_cumulative_return.py gdp_per_capita gdp_cumulative_return
+```
+
+This creates a new metric showing cumulative returns indexed to 100. Useful for comparing relative growth across countries with different starting values.
+
 ## Next Steps
 
 - Add more economic metrics (employment, inflation, etc.)
+- Create more derived metrics (growth rates, moving averages)
 - Explore correlations between different indicators
-- Export interesting findings
+- Compare GDP growth patterns across countries
 - Analyze trends and patterns
 
 Enjoy exploring the economic data!
