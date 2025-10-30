@@ -6,9 +6,12 @@ const API_BASE = 'http://localhost:5000/api';
 const state = {
     metrics: [],
     countries: [],
+    availablePeriods: [],
     selectedMetric: null,
     selectedMetric2: null,
     selectedCountries: new Set(),
+    startDate: null,
+    endDate: null,
     viewMode: 'timeseries' // 'timeseries' or 'correlation'
 };
 
@@ -25,7 +28,10 @@ const elements = {
     stats: document.getElementById('stats'),
     viewTimeseriesBtn: document.getElementById('view-timeseries'),
     viewCorrelationBtn: document.getElementById('view-correlation'),
-    correlationControls: document.getElementById('correlation-controls')
+    correlationControls: document.getElementById('correlation-controls'),
+    startDateSelect: document.getElementById('start-date'),
+    endDateSelect: document.getElementById('end-date'),
+    resetDatesBtn: document.getElementById('reset-dates')
 };
 
 // Initialize the application
@@ -44,6 +50,9 @@ function setupEventListeners() {
     elements.loadDataBtn.addEventListener('click', loadData);
     elements.viewTimeseriesBtn.addEventListener('click', () => switchViewMode('timeseries'));
     elements.viewCorrelationBtn.addEventListener('click', () => switchViewMode('correlation'));
+    elements.startDateSelect.addEventListener('change', handleStartDateChange);
+    elements.endDateSelect.addEventListener('change', handleEndDateChange);
+    elements.resetDatesBtn.addEventListener('click', resetDates);
 }
 
 // Switch view mode
@@ -111,6 +120,7 @@ async function handleMetricChange() {
 
     state.selectedMetric = metricName;
     await loadCountries(metricName);
+    await loadAvailablePeriods(metricName);
 }
 
 // Handle second metric selection change
@@ -147,6 +157,67 @@ async function loadCountries(metricName) {
     } catch (error) {
         showMessage('Failed to load countries', 'error');
     }
+}
+
+// Load available time periods for a metric
+async function loadAvailablePeriods(metricName) {
+    try {
+        const response = await fetch(`${API_BASE}/data?metric=${metricName}`);
+        const data = await response.json();
+
+        // Collect all unique periods
+        const periods = new Set();
+        data.data.forEach(countryData => {
+            countryData.time_series.forEach(point => {
+                periods.add(point.time_period);
+            });
+        });
+
+        // Sort periods chronologically
+        state.availablePeriods = Array.from(periods).sort();
+
+        // Populate date selectors
+        populateDateSelectors();
+    } catch (error) {
+        console.error('Failed to load available periods:', error);
+    }
+}
+
+// Populate date selector dropdowns
+function populateDateSelectors() {
+    // Clear existing options except the first "All data" option
+    elements.startDateSelect.innerHTML = '<option value="">All data</option>';
+    elements.endDateSelect.innerHTML = '<option value="">All data</option>';
+
+    state.availablePeriods.forEach(period => {
+        const startOption = document.createElement('option');
+        startOption.value = period;
+        startOption.textContent = period;
+        elements.startDateSelect.appendChild(startOption);
+
+        const endOption = document.createElement('option');
+        endOption.value = period;
+        endOption.textContent = period;
+        elements.endDateSelect.appendChild(endOption);
+    });
+}
+
+// Handle start date change
+function handleStartDateChange() {
+    state.startDate = elements.startDateSelect.value || null;
+}
+
+// Handle end date change
+function handleEndDateChange() {
+    state.endDate = elements.endDateSelect.value || null;
+}
+
+// Reset date filters
+function resetDates() {
+    state.startDate = null;
+    state.endDate = null;
+    elements.startDateSelect.value = '';
+    elements.endDateSelect.value = '';
 }
 
 // Handle country checkbox change
@@ -207,9 +278,17 @@ async function loadTimeSeriesData() {
         elements.loadDataBtn.disabled = true;
 
         const countries = Array.from(state.selectedCountries).join(',');
-        const response = await fetch(
-            `${API_BASE}/data?metric=${state.selectedMetric}&countries=${countries}`
-        );
+        let url = `${API_BASE}/data?metric=${state.selectedMetric}&countries=${countries}`;
+
+        // Add date filters if set
+        if (state.startDate) {
+            url += `&start_date=${state.startDate}`;
+        }
+        if (state.endDate) {
+            url += `&end_date=${state.endDate}`;
+        }
+
+        const response = await fetch(url);
         const data = await response.json();
 
         if (data.error) {

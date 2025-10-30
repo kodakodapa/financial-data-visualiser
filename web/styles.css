@@ -144,6 +144,45 @@ select:focus {
     gap: 8px;
 }
 
+.date-range-controls {
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+}
+
+.date-input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+}
+
+.date-label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.date-select {
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 14px;
+    background-color: var(--background);
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.date-select:hover {
+    border-color: var(--primary-color);
+}
+
+.date-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
 .btn {
     padding: 10px 20px;
     border: 1px solid var(--border-color);

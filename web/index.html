@@ -52,6 +52,25 @@
                 </div>
 
                 <div class="control-group">
+                    <label>Time Range:</label>
+                    <div class="date-range-controls">
+                        <div class="date-input-group">
+                            <label for="start-date" class="date-label">From:</label>
+                            <select id="start-date" class="date-select">
+                                <option value="">All data</option>
+                            </select>
+                        </div>
+                        <div class="date-input-group">
+                            <label for="end-date" class="date-label">To:</label>
+                            <select id="end-date" class="date-select">
+                                <option value="">All data</option>
+                            </select>
+                        </div>
+                        <button id="reset-dates" class="btn btn-small">Reset</button>
+                    </div>
+                </div>
+
+                <div class="control-group">
                     <button id="load-data" class="btn btn-primary">Load Data</button>
                 </div>
             </div>
