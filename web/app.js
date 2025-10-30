@@ -12,6 +12,7 @@ const state = {
     selectedCountries: new Set(),
     startDate: null,
     endDate: null,
+    rebaseToStart: false,
     viewMode: 'timeseries' // 'timeseries' or 'correlation'
 };
 
@@ -31,7 +32,8 @@ const elements = {
     correlationControls: document.getElementById('correlation-controls'),
     startDateSelect: document.getElementById('start-date'),
     endDateSelect: document.getElementById('end-date'),
-    resetDatesBtn: document.getElementById('reset-dates')
+    resetDatesBtn: document.getElementById('reset-dates'),
+    rebaseCheckbox: document.getElementById('rebase-to-start')
 };
 
 // Initialize the application
@@ -53,6 +55,7 @@ function setupEventListeners() {
     elements.startDateSelect.addEventListener('change', handleStartDateChange);
     elements.endDateSelect.addEventListener('change', handleEndDateChange);
     elements.resetDatesBtn.addEventListener('click', resetDates);
+    elements.rebaseCheckbox.addEventListener('change', handleRebaseChange);
 }
 
 // Switch view mode
@@ -220,6 +223,11 @@ function resetDates() {
     elements.endDateSelect.value = '';
 }
 
+// Handle rebase checkbox change
+function handleRebaseChange() {
+    state.rebaseToStart = elements.rebaseCheckbox.checked;
+}
+
 // Handle country checkbox change
 function handleCountryChange(event) {
     const country = event.target.value;
@@ -331,9 +339,45 @@ async function loadCorrelationData() {
     }
 }
 
+// Rebase time series data to start at 100 from the first data point
+function rebaseTimeSeries(data) {
+    return {
+        ...data,
+        data: data.data.map(countryData => {
+            if (countryData.time_series.length === 0) {
+                return countryData;
+            }
+
+            // Get the first value as the base
+            const baseValue = countryData.time_series[0].value;
+
+            // Recalculate all values relative to the base, indexed to 100
+            const rebasedSeries = countryData.time_series.map((point, index) => {
+                if (index === 0) {
+                    return { ...point, value: 100 };
+                }
+                // Calculate cumulative return from the base
+                const cumulativeReturn = (point.value / baseValue) * 100;
+                return { ...point, value: cumulativeReturn };
+            });
+
+            return {
+                ...countryData,
+                time_series: rebasedSeries
+            };
+        })
+    };
+}
+
 // Visualize time series data
 function visualizeTimeSeries(data) {
-    const traces = data.data.map(countryData => ({
+    // Apply rebase if enabled
+    let displayData = data;
+    if (state.rebaseToStart && state.startDate) {
+        displayData = rebaseTimeSeries(data);
+    }
+
+    const traces = displayData.data.map(countryData => ({
         x: countryData.time_series.map(d => d.time_period),
         y: countryData.time_series.map(d => d.value),
         type: 'scatter',
@@ -343,14 +387,23 @@ function visualizeTimeSeries(data) {
         marker: { size: 4 }
     }));
 
+    // Update title and axis labels based on rebase status
+    const isRebased = state.rebaseToStart && state.startDate;
+    const chartTitle = isRebased
+        ? `${data.metric} Over Time (Rebased to 100 at ${state.startDate})`
+        : `${data.metric} Over Time`;
+    const yAxisTitle = isRebased
+        ? `${data.metric} (Index, base=100 at ${state.startDate})`
+        : `${data.metric} (${data.unit || ''})`;
+
     const layout = {
-        title: `${data.metric} Over Time`,
+        title: chartTitle,
         xaxis: {
             title: 'Time Period',
             tickangle: -45
         },
         yaxis: {
-            title: `${data.metric} (${data.unit || ''})`
+            title: yAxisTitle
         },
         hovermode: 'closest',
         showlegend: true,

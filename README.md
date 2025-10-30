@@ -76,8 +76,12 @@ Then open your browser to: http://localhost:5000
 
 1. Select a metric from the dropdown
 2. Select one or more countries (use "Select All" or individual checkboxes)
-3. Click "Load Data"
-4. Interact with the chart: zoom, pan, hover for details
+3. Optionally filter by time range (From/To dates)
+4. Optionally enable "Rebase to 100 at start date" to normalize values
+5. Click "Load Data"
+6. Interact with the chart: zoom, pan, hover for details
+
+**Rebase Feature**: When enabled with a start date, recalculates all values to start at 100 from the selected date. Perfect for comparing relative growth across countries regardless of absolute values.
 
 ### Analyzing Correlations
 
@@ -151,7 +155,7 @@ python scripts/calculate_cumulative_return.py <source_metric> [target_metric]
 
 Example:
 ```bash
-python scripts/calculate_cumulative_return.py gdp_per_capita gdp_cumulative_return
+python scripts/calculate_cumulative_return.py gdp_per_capita gdp_cumulative_return_per_capita
 ```
 
 This calculates cumulative return indexed to 100 from any time series metric. The first value for each country is set to 100, and subsequent values reflect the cumulative percentage change from that baseline.

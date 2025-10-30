@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Rebase Function Test</title>
+</head>
+<body>
+    <h1>Rebase Function Test</h1>
+    <div id="results"></div>
+
+    <script>
+        // Test data
+        const testData = {
+            metric: 'gdp_per_capita',
+            unit: 'USD_PPP',
+            data: [
+                {
+                    country: 'Spain',
+                    time_series: [
+                        { time_period: '2020-Q1', value: 42152.2 },
+                        { time_period: '2020-Q2', value: 34642.7 },
+                        { time_period: '2020-Q3', value: 40141.2 },
+                        { time_period: '2020-Q4', value: 40423.9 },
+                        { time_period: '2021-Q1', value: 40931.4 }
+                    ]
+                }
+            ]
+        };
+
+        // Rebase function (same as in app.js)
+        function rebaseTimeSeries(data) {
+            return {
+                ...data,
+                data: data.data.map(countryData => {
+                    if (countryData.time_series.length === 0) {
+                        return countryData;
+                    }
+
+                    const baseValue = countryData.time_series[0].value;
+
+                    const rebasedSeries = countryData.time_series.map((point, index) => {
+                        if (index === 0) {
+                            return { ...point, value: 100 };
+                        }
+                        const cumulativeReturn = (point.value / baseValue) * 100;
+                        return { ...point, value: cumulativeReturn };
+                    });
+
+                    return {
+                        ...countryData,
+                        time_series: rebasedSeries
+                    };
+                })
+            };
+        }
+
+        // Run test
+        const rebasedData = rebaseTimeSeries(testData);
+
+        // Display results
+        let html = '<h2>Original Data (Spain GDP):</h2><table border="1"><tr><th>Quarter</th><th>Value</th></tr>';
+        testData.data[0].time_series.forEach(p => {
+            html += `<tr><td>${p.time_period}</td><td>${p.value.toFixed(2)}</td></tr>`;
+        });
+        html += '</table>';
+
+        html += '<h2>Rebased Data (Indexed to 100 at 2020-Q1):</h2><table border="1"><tr><th>Quarter</th><th>Value</th><th>% Change from Base</th></tr>';
+        rebasedData.data[0].time_series.forEach(p => {
+            const percentChange = p.value - 100;
+            html += `<tr><td>${p.time_period}</td><td>${p.value.toFixed(2)}</td><td>${percentChange.toFixed(2)}%</td></tr>`;
+        });
+        html += '</table>';
+
+        html += '<h3>Verification:</h3>';
+        html += '<p>2020-Q2: 34642.7 / 42152.2 * 100 = ' + ((34642.7 / 42152.2) * 100).toFixed(2) + ' (should match rebased value)</p>';
+        html += '<p>2020-Q3: 40141.2 / 42152.2 * 100 = ' + ((40141.2 / 42152.2) * 100).toFixed(2) + ' (should match rebased value)</p>';
+
+        document.getElementById('results').innerHTML = html;
+    </script>
+</body>
+</html>

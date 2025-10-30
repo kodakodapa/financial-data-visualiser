@@ -85,7 +85,7 @@ Result: See GDP drops and recovery across European countries
 
 ### 2. Comparing Growth Rates
 ```
-Metric: gdp_cumulative_return
+Metric: gdp_cumulative_return_per_capita
 Time Range: 2010-Q1 to 2024-Q4
 Countries: Poland, Estonia, Latvia
 Result: Compare cumulative growth over past 15 years
