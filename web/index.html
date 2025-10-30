@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Economic Data Visualizer</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Economic Data Visualizer</h1>
+            <div id="stats" class="stats"></div>
+        </header>
+
+        <main>
+            <div class="controls">
+                <div class="control-group">
+                    <label for="metric-select">Metric:</label>
+                    <select id="metric-select">
+                        <option value="">Loading...</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label for="country-select">Countries:</label>
+                    <div class="country-selector">
+                        <div class="country-controls">
+                            <button id="select-all-countries" class="btn btn-small">Select All</button>
+                            <button id="clear-countries" class="btn btn-small">Clear</button>
+                        </div>
+                        <div id="country-list" class="country-list">
+                            Loading...
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>View Mode:</label>
+                    <div class="view-mode-controls">
+                        <button id="view-timeseries" class="btn btn-mode active">Time Series</button>
+                        <button id="view-correlation" class="btn btn-mode">Correlation</button>
+                    </div>
+                </div>
+
+                <div id="correlation-controls" class="control-group" style="display: none;">
+                    <label for="metric2-select">Second Metric:</label>
+                    <select id="metric2-select">
+                        <option value="">Select metric...</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <button id="load-data" class="btn btn-primary">Load Data</button>
+                </div>
+            </div>
+
+            <div id="chart-container">
+                <div id="chart"></div>
+            </div>
+
+            <div id="message" class="message"></div>
+        </main>
+    </div>
+
+    <script type="module" src="app.js"></script>
+</body>
+</html>
