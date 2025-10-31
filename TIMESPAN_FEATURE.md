@@ -143,7 +143,7 @@ Potential improvements:
 2. **Open browser**: http://localhost:5000
 
 3. **Try it out**:
-   - Select "gdp_per_capita" or "gdp_cumulative_return"
+   - Select "gdp_per_capita" or "gdp_cumulative_return_per_capita"
    - Choose a start and/or end date
    - Select countries
    - Click "Load Data"
