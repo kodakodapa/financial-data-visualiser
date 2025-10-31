@@ -106,6 +106,15 @@ select:focus {
     gap: 8px;
 }
 
+.metric-list {
+    max-height: 150px;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 8px;
+    background-color: var(--background-alt);
+}
+
 .country-list {
     max-height: 200px;
     overflow-y: auto;
@@ -115,6 +124,7 @@ select:focus {
     background-color: var(--background-alt);
 }
 
+.metric-item,
 .country-item {
     padding: 6px 8px;
     cursor: pointer;
@@ -125,10 +135,12 @@ select:focus {
     transition: background-color 0.15s;
 }
 
+.metric-item:hover,
 .country-item:hover {
     background-color: var(--background);
 }
 
+.metric-item input[type="checkbox"],
 .country-item input[type="checkbox"] {
     cursor: pointer;
 }

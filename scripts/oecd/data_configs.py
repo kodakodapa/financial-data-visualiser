@@ -80,14 +80,14 @@ DATA_CONFIGS = {
         'time_column': 'TIME_PERIOD',
     },
 
-    'real_gdp': {
-        'dataset_path': 'OECD.SDD.NAD,DSD_NAMAIN1@DF_QNA,1.1',
-        'data_selection_template': 'Q.Y.{countries}.S1..B1GQ._Z...USD_PPP...T0102',
+    'population': {
+        'dataset_path': 'OECD.ELS.SAE,DSD_POPULATION@DF_POP_HIST,1.0',
+        'data_selection_template': '{countries}.POP.PS._T._T.',
         'countries': ALL_COUNTRIES,
-        'metric_name': 'real_gdp',
-        'unit': 'USD_PPP',
+        'metric_name': 'population',
+        'unit': 'persons',
         'source': 'OECD',
-        'description': 'Quarterly National Accounts - Real GDP, seasonally adjusted, PPP',
+        'description': 'Annual historical population data (total, both sexes)',
         'value_column': 'OBS_VALUE',
         'country_column': 'Reference area',
         'time_column': 'TIME_PERIOD',

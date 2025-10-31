@@ -17,14 +17,20 @@
         <main>
             <div class="controls">
                 <div class="control-group">
-                    <label for="metric-select">Metric:</label>
-                    <select id="metric-select">
-                        <option value="">Loading...</option>
-                    </select>
+                    <label>Metrics:</label>
+                    <div class="metric-selector">
+                        <div class="metric-controls">
+                            <button id="select-all-metrics" class="btn btn-small">Select All</button>
+                            <button id="clear-metrics" class="btn btn-small">Clear</button>
+                        </div>
+                        <div id="metric-list" class="metric-list">
+                            Loading...
+                        </div>
+                    </div>
                 </div>
 
                 <div class="control-group">
-                    <label for="country-select">Countries:</label>
+                    <label>Countries:</label>
                     <div class="country-selector">
                         <div class="country-controls">
                             <button id="select-all-countries" class="btn btn-small">Select All</button>
@@ -93,6 +99,6 @@
         </main>
     </div>
 
-    <script type="module" src="app.js"></script>
+    <script type="module" src="app_multimetric.js"></script>
 </body>
 </html>

@@ -9,7 +9,7 @@ Automated system for fetching economic data from the OECD SDMX API and upserting
 ```
 scripts/oecd/
 ├── __init__.py           # Module exports
-├── data_configs.py       # Dataset definitions (gdp_per_capita, real_gdp)
+├── data_configs.py       # Dataset definitions (gdp_per_capita, population)
 ├── query_builder.py      # Build OECD API URLs
 ├── api_client.py         # HTTP client with retry logic
 ├── parser.py             # Parse CSV responses
@@ -32,7 +32,7 @@ Output:
 ```
 Available data configurations:
   - gdp_per_capita
-  - real_gdp
+  - population
 ```
 
 ### 2. Fetch Latest Data (Dry Run)
@@ -70,23 +70,12 @@ Fetch the latest 2 quarters to catch new data and revisions:
 
 ```bash
 python scripts/fetch_oecd_data.py gdp_per_capita --latest 2
-python scripts/fetch_oecd_data.py real_gdp --latest 2
-```
-
-Or fetch all configured datasets:
-
-```bash
-python scripts/fetch_oecd_data.py --all --latest 2
 ```
 
 ### Backfill from 1995
 
 ```bash
-# Single dataset
 python scripts/backfill_oecd_data.py gdp_per_capita --start 1995-Q1 --end 2025-Q3 --batch-years 5
-
-# All datasets
-python scripts/backfill_oecd_data.py --all --start 1995-Q1 --end 2025-Q3 --batch-years 5
 ```
 
 The `--batch-years 5` option splits the request into 5-year batches to avoid timeouts.
@@ -107,15 +96,40 @@ python scripts/fetch_oecd_data.py gdp_per_capita --start 2020-Q1 --end 2023-Q4
 - **Unit**: USD_PPP
 - **Countries**: All OECD members + aggregates (~50)
 - **Metric name in DB**: `gdp_per_capita`
+- **Cumulative return metric**: `gdp_cumulative_return_per_capita` (indexed to 100 at 1995-Q1)
 
-### Real GDP
+### Note on Real GDP Dataset (Removed)
 
-- **Config name**: `real_gdp`
-- **OECD dataset**: `DF_QNA`
-- **Description**: Quarterly National Accounts - Real GDP, seasonally adjusted, PPP
-- **Unit**: USD_PPP
+The `real_gdp` dataset from OECD's `DF_QNA` was **removed** due to fundamental incompatibility with the `gdp_per_capita` dataset. Analysis revealed that these two OECD datasets use different base years, PPP conversion factors, or methodologies, making them mathematically inconsistent.
+
+**Data Quality Issue Discovered:**
+- The implied population growth calculated from `real_gdp / gdp_per_capita` was ~230%
+- Actual population growth for these countries was ~10-20%
+- This ~10x discrepancy indicates the datasets cannot be used together
+
+**Only GDP per capita metrics should be used for analysis.**
+
+### Population
+
+- **Config name**: `population`
+- **OECD dataset**: `DF_POP_HIST`
+- **Description**: Annual historical population data (total, both sexes)
+- **Unit**: persons
 - **Countries**: All OECD members + aggregates (~50)
-- **Metric name in DB**: `real_gdp`
+- **Metric name in DB**: `population`
+- **Frequency**: Annual (not quarterly)
+- **Time range**: 1995-2024
+
+**Note**: Population data is annual, so fetch commands should use year format (e.g., `--start 1995 --end 2024`) rather than quarterly format.
+
+**Example fetch:**
+```bash
+# Fetch population data (annual)
+python scripts/fetch_oecd_data.py population --start 1995 --end 2024
+
+# Periodic update (fetch latest year)
+python scripts/fetch_oecd_data.py population --start 2024 --end 2024
+```
 
 ## Countries Included
 
@@ -368,9 +382,9 @@ python scripts/fetch_oecd_data.py --list
 ```
 
 **Options:**
-- `<config>`: Config name (gdp_per_capita, real_gdp)
-- `--start YYYY-QN`: Start period (e.g., 2025-Q1)
-- `--end YYYY-QN`: End period (e.g., 2025-Q3)
+- `<config>`: Config name (gdp_per_capita, population)
+- `--start YYYY-QN or YYYY`: Start period (e.g., 2025-Q1 for quarterly, 2024 for annual)
+- `--end YYYY-QN or YYYY`: End period (e.g., 2025-Q3 for quarterly, 2024 for annual)
 - `--latest N`: Fetch latest N quarters from now
 - `--all`: Fetch all configured datasets
 - `--dry-run`: Fetch and parse but don't save to database
@@ -402,10 +416,10 @@ python scripts/backfill_oecd_data.py --all --start YYYY-QN --end YYYY-QN [--batc
 # 1. Backfill GDP per capita from 1995
 python scripts/backfill_oecd_data.py gdp_per_capita --start 1995-Q1 --end 2025-Q3 --batch-years 5
 
-# 2. Backfill real GDP from 1995
-python scripts/backfill_oecd_data.py real_gdp --start 1995-Q1 --end 2025-Q3 --batch-years 5
+# 2. Backfill population from 1995
+python scripts/fetch_oecd_data.py population --start 1995 --end 2024
 
-# 3. Recalculate cumulative return
+# 3. Calculate cumulative return
 python scripts/calculate_cumulative_return.py gdp_per_capita gdp_cumulative_return_per_capita
 ```
 
@@ -416,10 +430,18 @@ Run at quarter end + 45 days (when OECD publishes):
 ```bash
 # Fetch latest 2 quarters (catches new data + revisions)
 python scripts/fetch_oecd_data.py gdp_per_capita --latest 2
-python scripts/fetch_oecd_data.py real_gdp --latest 2
 
-# Recalculate cumulative return if needed
+# Recalculate cumulative return
 python scripts/calculate_cumulative_return.py gdp_per_capita gdp_cumulative_return_per_capita
+```
+
+### Annual Updates (Manual)
+
+Run once per year (when OECD publishes new population data):
+
+```bash
+# Fetch latest population data
+python scripts/fetch_oecd_data.py population --start 2024 --end 2024
 ```
 
 ## Testing
