@@ -369,12 +369,53 @@ function rebaseTimeSeries(data) {
     };
 }
 
+// Normalize time series data to handle missing quarters
+function normalizeTimeSeries(data) {
+    // Collect all unique time periods across all countries
+    const allPeriods = new Set();
+    data.data.forEach(countryData => {
+        countryData.time_series.forEach(point => {
+            allPeriods.add(point.time_period);
+        });
+    });
+
+    // Sort periods chronologically
+    const sortedPeriods = Array.from(allPeriods).sort();
+
+    // Normalize each country's data to include all periods
+    const normalizedData = {
+        ...data,
+        data: data.data.map(countryData => {
+            // Create a map of period -> value for quick lookup
+            const periodMap = new Map();
+            countryData.time_series.forEach(point => {
+                periodMap.set(point.time_period, point.value);
+            });
+
+            // Build normalized time series with null for missing periods
+            const normalizedSeries = sortedPeriods.map(period => ({
+                time_period: period,
+                value: periodMap.has(period) ? periodMap.get(period) : null
+            }));
+
+            return {
+                ...countryData,
+                time_series: normalizedSeries
+            };
+        })
+    };
+
+    return normalizedData;
+}
+
 // Visualize time series data
 function visualizeTimeSeries(data) {
+    // Normalize data to handle missing quarters
+    let displayData = normalizeTimeSeries(data);
+
     // Apply rebase if enabled
-    let displayData = data;
     if (state.rebaseToStart && state.startDate) {
-        displayData = rebaseTimeSeries(data);
+        displayData = rebaseTimeSeries(displayData);
     }
 
     const traces = displayData.data.map(countryData => ({
@@ -384,7 +425,8 @@ function visualizeTimeSeries(data) {
         mode: 'lines+markers',
         name: countryData.country,
         line: { width: 2 },
-        marker: { size: 4 }
+        marker: { size: 4 },
+        connectgaps: false  // Don't connect lines across missing data
     }));
 
     // Update title and axis labels based on rebase status
