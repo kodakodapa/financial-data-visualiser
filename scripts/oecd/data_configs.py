@@ -118,6 +118,32 @@ DATA_CONFIGS = {
         'country_column': 'Reference area',
         'time_column': 'TIME_PERIOD',
     },
+
+    'savings_rate': {
+        'dataset_path': 'OECD.SDD.NAD,DSD_NAMAIN10@DF_TABLE7_HHSAV,1.0',
+        'data_selection_template': 'Q.{countries}._T._T._Z._T.N.PC_HDIS.',
+        'countries': ALL_COUNTRIES,
+        'metric_name': 'savings_rate',
+        'unit': 'percent',
+        'source': 'OECD',
+        'description': 'Quarterly household net saving rate (% of disposable income)',
+        'value_column': 'OBS_VALUE',
+        'country_column': 'Reference area',
+        'time_column': 'TIME_PERIOD',
+    },
+
+    'disposable_income_per_capita': {
+        'dataset_path': 'OECD.SDD.NAD,DSD_NAMAIN1@DF_QNA_INCOME_CAPITA,1.1',
+        'data_selection_template': 'Q..{countries}..B6N.LR..',
+        'countries': ALL_COUNTRIES,
+        'metric_name': 'disposable_income_per_capita',
+        'unit': 'USD_PPP',
+        'source': 'OECD',
+        'description': 'Quarterly household net disposable income per capita, PPP',
+        'value_column': 'OBS_VALUE',
+        'country_column': 'Reference area',
+        'time_column': 'TIME_PERIOD',
+    },
 }
 
 def get_config(config_name):
