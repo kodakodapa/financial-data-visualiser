@@ -1,8 +1,12 @@
-# Productivity Growth Metrics
+# Productivity Metrics
 
 ## Overview
 
-Added productivity growth metrics for all countries in the database, measured in both nominal and percentage terms.
+The system provides comprehensive productivity metrics from two sources:
+1. **Calculated metrics** derived from GDP per capita (quarterly)
+2. **OECD API metrics** based on GDP per hour worked (annual)
+
+This document covers the **calculated metrics**. For OECD API fetching, see [PRODUCTIVITY_DATA_FETCHING.md](../Documentation/PRODUCTIVITY_DATA_FETCHING.md).
 
 ## Metrics Added
 
@@ -79,9 +83,28 @@ GET /api/correlate?metric1=productivity_growth_pct&metric2=gdp_per_capita&countr
 | 2024-Q3 | $72,632    | +$444          | +0.62%   |
 | 2024-Q2 | $72,188    | +$463          | +0.65%   |
 
+## Comparison with OECD API Metrics
+
+In addition to these calculated metrics, you can also fetch official OECD productivity data:
+
+| Metric | Source | Frequency | Measure |
+|--------|--------|-----------|---------|
+| productivity_growth | Calculated | Quarterly | GDP per capita change |
+| productivity_growth_pct | Calculated | Quarterly | GDP per capita % change |
+| productivity_gdp_per_hour | OECD API | Annual | GDP per hour worked (levels) |
+| productivity_growth_rate | OECD API | Annual | GDP per hour worked (growth %) |
+
+**When to use each:**
+- Use **calculated metrics** for quarterly analysis and when hours-worked data is unavailable
+- Use **OECD API metrics** for official productivity comparisons and annual trends
+- Calculated metrics are available immediately; OECD metrics require API fetching
+
+See [PRODUCTIVITY_DATA_FETCHING.md](../Documentation/PRODUCTIVITY_DATA_FETCHING.md) for details on fetching OECD productivity data.
+
 ## Notes
 
 - First quarter for each country has no growth data (needs previous quarter)
 - Negative growth indicates productivity decline
 - Data is automatically recalculated when GDP per capita is updated
-- Both metrics use the same source data for consistency
+- Both calculated metrics use the same source data for consistency
+- OECD metrics provide more accurate labour productivity but are only annual

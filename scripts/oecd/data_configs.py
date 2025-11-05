@@ -92,6 +92,32 @@ DATA_CONFIGS = {
         'country_column': 'Reference area',
         'time_column': 'TIME_PERIOD',
     },
+
+    'productivity_gdp_per_hour': {
+        'dataset_path': 'OECD.SDD.TPS,DSD_PDB@DF_PDB_LV,1.0',
+        'data_selection_template': 'A.{countries}.T_GDPHRS...',
+        'countries': ALL_COUNTRIES,
+        'metric_name': 'productivity_gdp_per_hour',
+        'unit': 'USD_PPP_2015',
+        'source': 'OECD',
+        'description': 'Annual GDP per hour worked, PPP (2015 USD)',
+        'value_column': 'OBS_VALUE',
+        'country_column': 'Reference area',
+        'time_column': 'TIME_PERIOD',
+    },
+
+    'productivity_growth_rate': {
+        'dataset_path': 'OECD.SDD.TPS,DSD_PDB@DF_PDB_GR,1.0',
+        'data_selection_template': 'A.{countries}.T_GDPHRS...',
+        'countries': ALL_COUNTRIES,
+        'metric_name': 'productivity_growth_rate',
+        'unit': 'percent_annual',
+        'source': 'OECD',
+        'description': 'Annual productivity growth rate (GDP per hour worked, year-on-year %)',
+        'value_column': 'OBS_VALUE',
+        'country_column': 'Reference area',
+        'time_column': 'TIME_PERIOD',
+    },
 }
 
 def get_config(config_name):
