@@ -86,6 +86,19 @@ DATA_CONFIGS = {
         'country_column': 'Reference area',
         'time_column': 'TIME_PERIOD',
     },
+
+    'population': {
+        'dataset_path': 'OECD.ELS.SAE,DSD_POPULATION@DF_POP_HIST,1.0',
+        'data_selection_template': '{countries}.POP.PS._T._T.',
+        'countries': ALL_COUNTRIES,
+        'metric_name': 'population',
+        'unit': 'persons',
+        'source': 'OECD',
+        'description': 'Annual historical population data (total, both sexes)',
+        'value_column': 'OBS_VALUE',
+        'country_column': 'Reference area',
+        'time_column': 'TIME_PERIOD',
+    },
 }
 
 def get_config(config_name):
