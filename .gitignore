@@ -31,6 +31,9 @@ Thumbs.db
 # Logs
 *.log
 
+# Exploratory scripts
+scripts/exploration/
+exploratory_scripts/
 
 .claude
 ideas.txt
